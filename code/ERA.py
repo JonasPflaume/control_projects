@@ -1,16 +1,10 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue May 26 16:27:17 2020
 
-@author: Li Jiayun
-"""
 import state_space_system
 
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
-from control.matlab import *
-import control 
 from scipy.linalg import fractional_matrix_power
 
 
@@ -59,16 +53,17 @@ def ERA(YY,m,n,nin,nout,r):
 
 
 if __name__ == '__main__':
+    
     time = np.linspace(0, 20, num=500)
     sys = state_space_system.sys()# import original system
     sys.reset()
     
     u = np.zeros((time.shape[0]-1, 2))
-    u[0,0] = 1#/(time[1]-time[0])
+    u[0,0] = 1
     u1 = u
     
     u = np.zeros((time.shape[0]-1, 2))
-    u[0,1] = 1#/(time[1]-time[0])
+    u[0,1] = 1
     u2 = u
     
     y_1 = sys.simulate(time, u1)
@@ -78,66 +73,50 @@ if __name__ == '__main__':
     yFull = np.zeros((time.shape[0],p,q)) #r*5+2
     
     
-    #tspan = np.arange(0,(r*5+2),1)
+    # tspan = np.arange(0,(r*5+2),1)
 
     yFull[:,:,0] = y_1[:,:] #0:r*5+2
     yFull[:,:,1] = y_2[:,:]
 
     YY = np.transpose(yFull,axes=(1,2,0)) # reorder to size p x q x m
 
-    ## Compute ERA from impulse response
+    # Compute ERA system from impulse response
     mco = int(np.floor((yFull.shape[0]-1)/2)) # m_c = m_o = (m-1)/2
     Ar,Br,Cr,Dr,HSVs = ERA(YY,mco,mco,q,p,r)
-    sysERA = ss(Ar,Br,Cr,Dr,1)
-
-
-    y = np.zeros((time.shape[0],p,q))
-
-    for qi in range(q):
-        y[:,:,qi],t = impulse(sysERA,np.arange(time.shape[0]),input=qi)
+    
+    
+    
+    ## impulse response test ##  
+    
+    # impulse response test for channel 1
+    y1 = []
+    x0 = np.zeros((Ar.shape[1],1))
+    
+    for n in range(u1.shape[0]):
+        temp = Cr@x0 + Dr@(u1[n]).reshape(Dr.shape[1],1)
+        y1.append(temp)
+        x0 = Ar@x0 + Br@(u1[n]).reshape(Dr.shape[1],1)
+        
+    # impulse response test for channel 2  
+    y2 = []
+    x0 = np.zeros((Ar.shape[1],1))
+    
+    for n in range(u2.shape[0]):
+        temp = Cr@x0 + Dr@(u2[n]).reshape(Dr.shape[1],1)
+        y2.append(temp)
+        x0 = Ar@x0 + Br@(u2[n]).reshape(Dr.shape[1],1)
    
-
-    #Plot the individual output from each input channel
-    '''
-    fig,axs = plt.subplots(3,2)
-    axs = axs.reshape(-1)
+    y1 = (np.array(y1)).reshape(499,3)
+    y2 = (np.array(y2)).reshape(499,3)
     
-    axs[0].step(t,y[:,0,0],linewidth=1.2)
-    
-    axs[0].set_ylabel('y1')
-    axs[0].set_title('u1')
-    
-    axs[1].step(t,y[:,0,1],linewidth=1.2)
-    
-    axs[1].set_title('u2')
-    
-    axs[2].step(t,y[:,1,0],linewidth=1.2)
-    
-    axs[2].set_ylabel('y2')
-    
-    axs[3].step(t,y[:,1,1],linewidth=1.2,label='ERA, r={}'.format(r))
-    
-    axs[4].step(t,y[:,2,0],linewidth=1.2)
-    axs[4].set_ylabel('y3')
-    axs[5].step(t,y[:,2,1],linewidth=1.2)
-    axs[3].legend(prop={'size': 12})
-    
-    for ax in axs:
-        ax.set_xlim(0,500)
-        
-        plt.show()
-        '''
-        
-        
-    ###################################################  
-    
+    # plot the test results
     fig,axs = plt.subplots(2,2)
     axs = axs.reshape(-1)
     
-    axs[0].plot(time,y[:,:,0],linewidth=2)
+    axs[0].plot(time[:-1],y1,linewidth=2)
     axs[0].set_ylabel('Impul_res_from_ERA')
     axs[0].set_title('u1')
-    axs[1].plot(time,y[:,:,1],linewidth=2)
+    axs[1].plot(time[:-1],y2,linewidth=2)
     axs[1].set_title('u2')
     
     axs[2].plot(time,y_1,linewidth=2)
@@ -145,7 +124,7 @@ if __name__ == '__main__':
     axs[3].plot(time,y_2,linewidth=2)
     plt.savefig('impulse_response',dpi=250)
     
-    ##################################################
+    ## Step response test ##
     fig,axs = plt.subplots(2,1)
     axs = axs.reshape(-1)
     # original

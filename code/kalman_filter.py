@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Sat Jun 20 18:39:43 2020
 
-@author: Li Jiayun
-"""
 import state_space_system
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,15 +10,16 @@ def predict(x,u,P,A,Q,B):
     
     xpred = A@x + (B@u).reshape(A.shape[0],1)
     Ppred = A@P@A.T + Q
-    
     return xpred,Ppred
 
 def K_G(P,C,R):
+    # kalman gain calculating
+    
     K = P@C.T@np.linalg.inv(C@P@C.T+R)
     return K
 
-
 def update(xpred,K,z,C,P,R,A):
+    #update the x and P matrix
     
     z = z.reshape(C.shape[0],1)
     xnew = xpred + K@(z-(C@xpred).reshape(C.shape[0],1))
@@ -32,20 +29,22 @@ def update(xpred,K,z,C,P,R,A):
     return xnew,Pnew
 
 if __name__ == '__main__':
+    
     # identifield system
     q = 2   # Number of inputs
     p = 3   # Number of outputs
     r = 10  # Reduced model order
     
     time = np.linspace(0, 20, num=500)
-    sys = state_space_system.sys()# import real system
+    # import real system
+    sys = state_space_system.sys()
     sys.reset()
     u = np.zeros((time.shape[0]-1, 2))
-    u[0,0] = 1#/(time[1]-time[0])
+    u[0,0] = 1
     u1 = u
     
     u = np.zeros((time.shape[0]-1, 2))
-    u[0,1] = 1#/(time[1]-time[0])
+    u[0,1] = 1
     u2 = u
     
     y_1 = sys.simulate(time, u1)
@@ -67,7 +66,9 @@ if __name__ == '__main__':
     # Compute reduced order model from impulse response
     mco = int(np.floor((yFull.shape[0]-1)/2)) # m_c = m_o = (m-1)/2
     A,B,C,D,HSVs = ERA(YY,mco,mco,q,p,r)
-    ##################################################################
+    
+    ##TEST KALMAN FILTER##
+    
     u = np.ones((time.shape[0]-1, 2))
     
     covariance = 1
@@ -86,7 +87,7 @@ if __name__ == '__main__':
     X = []
     
     for k in range(time.shape[0]-1):
-    # Simulate for one timestep:
+    # Simulate for one Horizon:
         X.append(x)
         
         sys.simulate(time[k:k+2], u[[k]])
@@ -102,9 +103,9 @@ if __name__ == '__main__':
         Y = np.array(y)
         
     X = np.array(X)
-        
     y = np.array(y)
     
+    # generate the kalman filter evaluated trajectory
     y_test = []
     for n in range(len(time)-1):
         y_test.append(C@X[n]+(D@u[n]).reshape(C.shape[0],1))
@@ -113,6 +114,8 @@ if __name__ == '__main__':
     y_test = y_test.reshape(499,3)
     
     x0 = np.zeros((A.shape[0],1))
+    
+    # trajectory from the ERA system under the same input signal
     y_ERA = []
     for n in range(len(time)-1):
         x_n = A@x0 + (B@u[n]).reshape(A.shape[0],1)
@@ -122,6 +125,7 @@ if __name__ == '__main__':
     y_ERA = np.array(y_ERA)
     y_ERA = y_ERA.reshape(499,3)
     
+    # visulization of the results
     
     fig, ax = plt.subplots(3,1)
     ax = ax.reshape(-1)

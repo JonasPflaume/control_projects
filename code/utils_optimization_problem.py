@@ -1,14 +1,9 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Jun 23 13:36:08 2020
-
-@author: Li Jiayun
-"""
 
 import numpy as np
 
-
 def augmented_system(Ar,Br,Cr):
+    # creating the augmented system for unbiased tracking task
     
     temp1a = np.zeros((Br.shape[1],Ar.shape[0]))
     temp2a = np.eye(Br.shape[1])
