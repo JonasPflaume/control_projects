@@ -9,4 +9,4 @@ controller design:      model predictive control, optimization problem solved by
 
 
 ## start to build a adaptive dynamic programming controller  
-from **Optimal Control of Unknown Nonlinear Discrete‐Time Systems Using the Iterative Globalized Dual Heuristic Programming Algorithm Derong Liu et. al
+method followed **Optimal Control of Unknown Nonlinear Discrete‐Time Systems Using the Iterative Globalized Dual Heuristic Programming Algorithm Derong Liu et. al**
