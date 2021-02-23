@@ -9,7 +9,7 @@ controller design:      model predictive control, optimization problem solved by
 **env:	code need to be run under anaconda. It's a long time after finishing this project, so that uni research team provided state space system might not be able to load by pyarmor any more(quite frustrating:/).**
 
 
-## start to build a adaptive dynamic programming controller to double inverted pendulum.  
+## (Feb 23. 2021)start building a adaptive dynamic programming controller to double inverted pendulum.  
 
 - TODO: Build a double inverted pendulum  
 - TODO: Implement collocation utils  
