@@ -11,9 +11,10 @@ controller design:      model predictive control, optimization problem solved by
 
 ## 2.(Feb 23. 2021)start building a adaptive dynamic programming controller to double inverted pendulum.  
 
-- TODO: Build a double inverted pendulum  
-- TODO: Implement collocation utils  
-- TODO: Implement nonlinear MPC  
+~~- TODO: Build a double inverted pendulum  ~~
+~~- TODO: Implement collocation utils  ~~
+~~- TODO: Implement nonlinear MPC  ~~
+- TODO: Add obstacle avoidance
 - TODO: Implement ADP controller  
 
 ADP method followed **Optimal Control of Unknown Nonlinear Discrete‐Time Systems Using the Iterative Globalized Dual Heuristic Programming Algorithm Derong Liu et. al**  
